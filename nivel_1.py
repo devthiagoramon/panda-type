@@ -21,9 +21,11 @@ YELLOW = (255, 255, 0)
 FONT = pygame.font.SysFont("Arial", 32)
 
 # Lista de palavras para praticar
-words = ["exemplo", "palavra", "digitação", "fácil", "programar"]
+words = ["qwerty", "asdfg", "zxcvb", "qfadc", "zcbtwa"]
 current_word = random.choice(words)  # Palavra atual a ser digitada
 typed_word = ""  # Palavra digitada pelo jogador
+score = 0  # Pontuação do jogador
+vidas = 3  # Chances para errar
 
 # Configuração das teclas (disposição simples)
 keys = [
@@ -54,8 +56,8 @@ def draw_keyboard():
     win.blit(space_text, (325, y + 5))
     key_positions[" "] = (200, y)  # Adiciona a posição da barra de espaço
 
-# Função para exibir a palavra a ser digitada e o progresso do jogador
-def draw_word():
+# Função para exibir a palavra a ser digitada, o progresso do jogador e a pontuação
+def draw_word_and_score():
     # Exibe a palavra atual
     word_text = FONT.render("Digite: " + current_word, True, BLACK)
     win.blit(word_text, (100, 200))
@@ -64,12 +66,48 @@ def draw_word():
     typed_text = FONT.render("Digitado: " + typed_word, True, GREEN if typed_word == current_word else RED)
     win.blit(typed_text, (100, 250))
 
+    # Exibe a pontuação
+    score_text = FONT.render("Pontuação: " + str(score), True, BLACK)
+    win.blit(score_text, (100, 150))
+
+    # Exibe as vidas restantes
+    vidas_text = FONT.render("Vidas: " + str(vidas), True, BLACK)
+    win.blit(vidas_text, (100, 100))
+
+# Função para exibir a tela de vitória
+def victory_condition():
+    win.fill(WHITE)
+    victory_text = FONT.render("Parabéns! Você venceu!", True, GREEN)
+    score_text = FONT.render("Pontuação Final: " + str(score), True, BLACK)
+    win.blit(victory_text, (250, 250))
+    win.blit(score_text, (250, 300))
+    pygame.display.flip()
+    pygame.time.delay(3000)  # Pausa de 3 segundos para mostrar a tela de vitória
+
+# Função para exibir tela de derrota
+def defeat_condition():
+    win.fill(WHITE)
+    defeat_text = FONT.render("Você perdeu", True, RED)
+    score_text = FONT.render("Pontuação Final: " + str(score), True, BLACK)
+    win.blit(defeat_text, (250, 250))
+    win.blit(score_text, (250, 300))
+    pygame.display.flip()
+    pygame.time.delay(3000)  # Pausa de 3 segundos para mostrar a tela de derrota
+
 # Loop principal do jogo
 running = True
 while running:
     win.fill(WHITE)  # Limpa a tela
     draw_keyboard()  # Desenha o teclado
-    draw_word()      # Desenha a palavra e a entrada do jogador
+    draw_word_and_score()  # Desenha a palavra, a entrada do jogador e a pontuação
+
+    # Verifica a condição de vitória ou derrota
+    if score >= 10:
+        victory_condition()
+        running = False  # Encerra o jogo após a vitória
+    elif vidas <= 0:
+        defeat_condition()
+        running = False  # Encerra o jogo após a derrota
 
     # Verifica eventos
     for event in pygame.event.get():
@@ -82,8 +120,12 @@ while running:
             else:
                 typed_word += event.unicode  # Adiciona o caractere pressionado
 
-            # Verifica se a palavra está completa e correta
-            if typed_word == current_word:
+            # Verifica se o comprimento da palavra digitada corresponde à palavra alvo
+            if len(typed_word) == len(current_word):
+                if typed_word == current_word:
+                    score += 1  # Incrementa a pontuação
+                else:
+                    vidas -= 1  # Diminui uma vida
                 typed_word = ""  # Limpa a entrada
                 current_word = random.choice(words)  # Seleciona nova palavra
 
