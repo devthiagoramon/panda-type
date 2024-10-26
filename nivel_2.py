@@ -21,14 +21,14 @@ YELLOW = (255, 255, 0)
 FONT = pygame.font.SysFont("Arial", 32)
 
 # Lista de palavras para praticar
-words = ["casa", "faca", "arara", "adaga", "vaca", "reta"]
+words = ["girafa", "panda", "sapato", "cozinha", "mangueira"]
 current_word = random.choice(words)  # Palavra atual a ser digitada
 typed_word = ""  # Palavra digitada pelo jogador
 score = 0  # Pontuação do jogador
 vidas = 3  # Chances para errar
 
 # Configuração do temporizador
-time_limit = 20000
+time_limit = 15000
 start_time = pygame.time.get_ticks()
 progress_bar_width = 300
 
