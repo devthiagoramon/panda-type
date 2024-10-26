@@ -27,6 +27,11 @@ typed_word = ""  # Palavra digitada pelo jogador
 score = 0  # Pontuação do jogador
 vidas = 3  # Chances para errar
 
+# Configuração do temporizador
+time_limit = 20000
+start_time = pygame.time.get_ticks()
+progress_bar_width = 300
+
 # Configuração das teclas (disposição simples)
 keys = [
     "1234567890-=", "qwertyuiop[]", "asdfghjklç~", "zxcvbnm,.;/"
@@ -74,6 +79,14 @@ def draw_word_and_score():
     vidas_text = FONT.render("Vidas: " + str(vidas), True, BLACK)
     win.blit(vidas_text, (100, 100))
 
+# Função para desenhar a barra de progresso do temporizador
+def draw_progress_bar():
+    elapsed_time = pygame.time.get_ticks() - start_time
+    remaining_time = max(0, time_limit - elapsed_time)
+    progress_width = int((remaining_time / time_limit) * progress_bar_width)
+    pygame.draw.rect(win, RED, (100, 50, progress_bar_width, 20))
+    pygame.draw.rect(win, GREEN, (100, 50, progress_width, 20))
+
 # Função para exibir a tela de vitória
 def victory_condition():
     win.fill(WHITE)
@@ -97,9 +110,13 @@ def defeat_condition():
 # Loop principal do jogo
 running = True
 while running:
-    win.fill(WHITE)  # Limpa a tela
-    draw_keyboard()  # Desenha o teclado
-    draw_word_and_score()  # Desenha a palavra, a entrada do jogador e a pontuação
+    win.fill(WHITE)
+    draw_keyboard()
+    draw_word_and_score()
+    win.fill(WHITE)
+    draw_keyboard()
+    draw_progress_bar()
+    draw_word_and_score()
 
     # Verifica a condição de vitória ou derrota
     if score >= 10:
@@ -108,6 +125,14 @@ while running:
     elif vidas <= 0:
         defeat_condition()
         running = False  # Encerra o jogo após a derrota
+
+    # Verifica o tempo restante para a palavra atual
+    elapsed_time = pygame.time.get_ticks() - start_time
+    if elapsed_time >= time_limit:
+        vidas -= 1
+        typed_word = ""
+        current_word = random.choice(words)
+        start_time = pygame.time.get_ticks()
 
     # Verifica eventos
     for event in pygame.event.get():
@@ -119,6 +144,13 @@ while running:
                 typed_word = typed_word[:-1]  # Remove o último caractere
             else:
                 typed_word += event.unicode  # Adiciona o caractere pressionado
+
+                # Verifica se a palavra foi digitada corretamente
+                if typed_word == current_word:
+                    score += 1
+                    typed_word = ""
+                    current_word = random.choice(words)
+                    start_time = pygame.time.get_ticks()  # Reinicia o temporizador
 
             # Verifica se o comprimento da palavra digitada corresponde à palavra alvo
             if len(typed_word) == len(current_word):
