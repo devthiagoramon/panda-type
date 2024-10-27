@@ -148,7 +148,13 @@ while running:
                     current_word = random.choice(words)
             else:
                 char = event.unicode
-                typed_word += char
+                if char not in "´`~^¨":
+                    typed_word += char
+                    if typed_word[-1] != current_word[len(typed_word) - 1]:
+                        error_made = True
+                    else:
+                        error_made = False
+
 
                 if typed_word[-1] != current_word[len(typed_word) - 1]:
                     error_made = True
