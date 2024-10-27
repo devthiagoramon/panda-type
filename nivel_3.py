@@ -124,7 +124,7 @@ while running:
 
     elapsed_time = pygame.time.get_ticks() - start_time
     if elapsed_time >= time_limit:
-        vidas -= 1
+        vidas = 0
         typed_word = ""
         current_word = random.choice(words)
         start_time = pygame.time.get_ticks()
