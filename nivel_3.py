@@ -45,12 +45,10 @@ def draw_keyboard():
         x = 100
         y += row_gap
 
-
     pygame.draw.rect(win, WHITE, (200, y, 300, 40))
     pygame.draw.rect(win, BLACK, (200, y, 300, 40), 2)
     space_text = FONT.render("Espaço", True, BLACK)
     win.blit(space_text, (325, y + 5))
-
 
     backspace_color = RED if error_made else WHITE
     pygame.draw.rect(win, backspace_color, (600, 300, 100, 40))
@@ -58,13 +56,11 @@ def draw_keyboard():
     backspace_text = FONT.render("Backspace", True, BLACK)
     win.blit(backspace_text, (610, 305))
 
-
     pygame.draw.rect(win, WHITE, (600, 360, 100, 40))
     pygame.draw.rect(win, BLACK, (600, 360, 100, 40), 2)
     enter_text = FONT.render("Enter", True, BLACK)
     win.blit(enter_text, (620, 365))
 
-# Função para exibir a palavra e a pontuação
 def draw_word_and_score():
     word_text = FONT.render("Digite: " + current_word, True, BLACK)
     win.blit(word_text, (100, 200))
@@ -78,14 +74,12 @@ def draw_word_and_score():
     vidas_text = FONT.render("Vidas: " + str(vidas), True, BLACK)
     win.blit(vidas_text, (100, 100))
 
-
 def draw_progress_bar():
     elapsed_time = pygame.time.get_ticks() - start_time
     remaining_time = max(0, time_limit - elapsed_time)
     progress_width = int((remaining_time / time_limit) * progress_bar_width)
     pygame.draw.rect(win, RED, (100, 50, progress_bar_width, 20))
     pygame.draw.rect(win, GREEN, (100, 50, progress_width, 20))
-
 
 def victory_condition():
     win.fill(WHITE)
@@ -96,7 +90,6 @@ def victory_condition():
     pygame.display.flip()
     pygame.time.delay(3000)
 
-
 def defeat_condition():
     win.fill(WHITE)
     defeat_text = FONT.render("Você perdeu", True, RED)
@@ -106,7 +99,6 @@ def defeat_condition():
     pygame.display.flip()
     pygame.time.delay(3000)
 
-# Loop principal do jogo
 running = True
 while running:
     win.fill(WHITE)
@@ -148,18 +140,12 @@ while running:
                     current_word = random.choice(words)
             else:
                 char = event.unicode
-                if char not in "´`~^¨":
+                if char not in "´`~^¨" and len(typed_word) < len(current_word):
                     typed_word += char
                     if typed_word[-1] != current_word[len(typed_word) - 1]:
                         error_made = True
                     else:
                         error_made = False
-
-
-                if typed_word[-1] != current_word[len(typed_word) - 1]:
-                    error_made = True
-                else:
-                    error_made = False
 
     pygame.display.flip()
 

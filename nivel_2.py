@@ -45,19 +45,16 @@ def draw_keyboard():
         x = 100
         y += row_gap
 
-
     pygame.draw.rect(win, WHITE, (200, y, 300, 40))
     pygame.draw.rect(win, BLACK, (200, y, 300, 40), 2)
     space_text = FONT.render("Espaço", True, BLACK)
     win.blit(space_text, (325, y + 5))
-
 
     backspace_color = RED if error_made else WHITE
     pygame.draw.rect(win, backspace_color, (600, 300, 100, 40))
     pygame.draw.rect(win, BLACK, (600, 300, 100, 40), 2)
     backspace_text = FONT.render("Backspace", True, BLACK)
     win.blit(backspace_text, (610, 305))
-
 
     pygame.draw.rect(win, WHITE, (600, 360, 100, 40))
     pygame.draw.rect(win, BLACK, (600, 360, 100, 40), 2)
@@ -78,14 +75,12 @@ def draw_word_and_score():
     vidas_text = FONT.render("Vidas: " + str(vidas), True, BLACK)
     win.blit(vidas_text, (100, 100))
 
-
 def draw_progress_bar():
     elapsed_time = pygame.time.get_ticks() - start_time
     remaining_time = max(0, time_limit - elapsed_time)
     progress_width = int((remaining_time / time_limit) * progress_bar_width)
     pygame.draw.rect(win, RED, (100, 50, progress_bar_width, 20))
     pygame.draw.rect(win, GREEN, (100, 50, progress_width, 20))
-
 
 def victory_condition():
     win.fill(WHITE)
@@ -95,7 +90,6 @@ def victory_condition():
     win.blit(score_text, (250, 300))
     pygame.display.flip()
     pygame.time.delay(3000)
-
 
 def defeat_condition():
     win.fill(WHITE)
@@ -148,7 +142,9 @@ while running:
                     current_word = random.choice(words)
             else:
                 char = event.unicode
-                typed_word += char
+                # Limita o número de letras digitadas ao tamanho da palavra alvo
+                if len(typed_word) < len(current_word):
+                    typed_word += char
 
                 if typed_word[-1] != current_word[len(typed_word) - 1]:
                     error_made = True
