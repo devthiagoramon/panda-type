@@ -14,12 +14,13 @@ RED = (255, 0, 0)
 
 FONT = pygame.font.SysFont("Arial", 32)
 
-words = ["girafa", "panda", "sapato", "cozinha", "mangueira"]
+words = ["Girafa", "Panda", "Sapato", "Cozinha", "Mangueira"]
 current_word = random.choice(words)
 typed_word = ""
 score = 0
 vidas = 3
 error_made = False
+shift_pressed = False  # Variável para controlar o estado do Shift
 
 time_limit = 15000
 start_time = pygame.time.get_ticks()
@@ -36,7 +37,7 @@ def draw_keyboard():
 
     for row in keys:
         for key in row:
-            color = GREEN if key == next_letter else WHITE
+            color = GREEN if key.lower() == next_letter.lower() else WHITE
             pygame.draw.rect(win, color, (x, y, 40, 40))
             pygame.draw.rect(win, BLACK, (x, y, 40, 40), 2)
             key_text = FONT.render(key, True, BLACK)
@@ -45,17 +46,27 @@ def draw_keyboard():
         x = 100
         y += row_gap
 
+    # Tecla de espaço
     pygame.draw.rect(win, WHITE, (200, y, 300, 40))
     pygame.draw.rect(win, BLACK, (200, y, 300, 40), 2)
     space_text = FONT.render("Espaço", True, BLACK)
     win.blit(space_text, (325, y + 5))
 
+    # Tecla Shift
+    shift_color = GREEN if next_letter.isupper() else WHITE
+    pygame.draw.rect(win, shift_color, (100, y, 80, 40))
+    pygame.draw.rect(win, BLACK, (100, y, 80, 40), 2)
+    shift_text = FONT.render("Shift", True, BLACK)
+    win.blit(shift_text, (110, y + 5))
+
+    # Tecla Backspace
     backspace_color = RED if error_made else WHITE
     pygame.draw.rect(win, backspace_color, (600, 300, 100, 40))
     pygame.draw.rect(win, BLACK, (600, 300, 100, 40), 2)
     backspace_text = FONT.render("Backspace", True, BLACK)
     win.blit(backspace_text, (610, 305))
 
+    # Tecla Enter
     pygame.draw.rect(win, WHITE, (600, 360, 100, 40))
     pygame.draw.rect(win, BLACK, (600, 360, 100, 40), 2)
     enter_text = FONT.render("Enter", True, BLACK)
@@ -140,8 +151,13 @@ while running:
                     vidas -= 1
                     typed_word = ""
                     current_word = random.choice(words)
+            elif event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
+                shift_pressed = True  # Ativa o estado do Shift
             else:
                 char = event.unicode
+                if shift_pressed and len(typed_word) < len(current_word):
+                    char = char.upper()  # Converte para maiúscula se Shift estiver pressionado
+
                 # Limita o número de letras digitadas ao tamanho da palavra alvo
                 if len(typed_word) < len(current_word):
                     typed_word += char
@@ -150,6 +166,10 @@ while running:
                     error_made = True
                 else:
                     error_made = False
+
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
+                shift_pressed = False  # Desativa o estado do Shift
 
     pygame.display.flip()
 

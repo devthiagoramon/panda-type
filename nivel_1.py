@@ -14,7 +14,7 @@ RED = (255, 0, 0)
 
 FONT = pygame.font.SysFont("Arial", 32)
 
-words = ["casa", "faca", "arara", "adaga", "vaca", "reta"]
+words = ["Casa", "Faca", "Arara", "Adaga", "Vaca", "Reta"]
 current_word = random.choice(words)
 typed_word = ""
 score = 0
@@ -33,10 +33,13 @@ def draw_keyboard():
     ]
 
     next_letter = current_word[len(typed_word)] if len(typed_word) < len(current_word) else ""
+    highlight_shift = next_letter.isupper()  # Verifica se a próxima letra é maiúscula
 
+    # Desenhar as teclas do alfabeto
     for row in keys:
         for key in row:
-            color = GREEN if key == next_letter else WHITE
+            # Define a cor da tecla
+            color = GREEN if key.lower() == next_letter.lower() else WHITE
             pygame.draw.rect(win, color, (x, y, 40, 40))
             pygame.draw.rect(win, BLACK, (x, y, 40, 40), 2)
             key_text = FONT.render(key, True, BLACK)
@@ -45,17 +48,32 @@ def draw_keyboard():
         x = 100
         y += row_gap
 
+    # Destaque a letra correta se for maiúscula
+    if highlight_shift and next_letter:
+        key_text = FONT.render(next_letter, True, GREEN)
+        win.blit(key_text, (x + 10, y + 5))
+
+    # Tecla de espaço
     pygame.draw.rect(win, WHITE, (200, y, 300, 40))
     pygame.draw.rect(win, BLACK, (200, y, 300, 40), 2)
     space_text = FONT.render("Espaço", True, BLACK)
     win.blit(space_text, (325, y + 5))
 
+    # Tecla Shift
+    shift_color = GREEN if highlight_shift else WHITE
+    pygame.draw.rect(win, shift_color, (100, y, 80, 40))
+    pygame.draw.rect(win, BLACK, (100, y, 80, 40), 2)
+    shift_text = FONT.render("Shift", True, BLACK)
+    win.blit(shift_text, (110, y + 5))
+
+    # Tecla Backspace
     backspace_color = RED if error_made else WHITE
     pygame.draw.rect(win, backspace_color, (600, 300, 100, 40))
     pygame.draw.rect(win, BLACK, (600, 300, 100, 40), 2)
     backspace_text = FONT.render("Backspace", True, BLACK)
     win.blit(backspace_text, (610, 305))
 
+    # Tecla Enter
     pygame.draw.rect(win, WHITE, (600, 360, 100, 40))
     pygame.draw.rect(win, BLACK, (600, 360, 100, 40), 2)
     enter_text = FONT.render("Enter", True, BLACK)
@@ -140,12 +158,10 @@ while running:
                     vidas -= 1
                     typed_word = ""
                     current_word = random.choice(words)
-            else:
+            elif event.key not in [pygame.K_LSHIFT, pygame.K_RSHIFT]:  # Ignorar Shift
                 char = event.unicode
-                # Limite de letras conforme o tamanho da palavra
                 if len(typed_word) < len(current_word):
                     typed_word += char
-
                 if typed_word[-1] != current_word[len(typed_word) - 1]:
                     error_made = True
                 else:
