@@ -27,8 +27,9 @@ def main_screen():
     container_screen = pygame.Rect((screen.get_width()/2)-(400/2), (screen.get_height() / 2)-(450/2), 400, 450)
 
     # Buttons
-    button_rect_init = pygame.Rect((screen.get_width() / 2) - (300 / 2), screen.get_height() / 2 - 50, 300, 75)
-    button_rect_quit = pygame.Rect((screen.get_width() / 2) - (300 / 2), screen.get_height() / 2 + 50, 300, 75)
+    button_rect_init = pygame.Rect((screen.get_width() / 2) - (300 / 2), screen.get_height() / 2 - 100, 300, 75)
+    button_rect_tuto = pygame.Rect((screen.get_width() / 2) - (300 / 2), screen.get_height() / 2, 300, 75)
+    button_rect_quit = pygame.Rect((screen.get_width() / 2) - (300 / 2), screen.get_height() / 2 + 100, 300, 75)
 
     # Texts
     sans_bold = pygame.font.Font('fonts/OpenSans-Bold.ttf', 64)
@@ -110,6 +111,7 @@ def main_screen():
         screen.blit(game_label, game_label_pos)
 
         draw_button(screen, button_rect_init, 'Iniciar jogo')
+        draw_button(screen, button_rect_tuto, 'Tutorial')
         draw_button(screen, button_rect_quit, 'Sair do jogo')
 
         for event in pygame.event.get():
@@ -121,6 +123,8 @@ def main_screen():
                 if button_rect_init.collidepoint(pos):
                     running = False
                     return 1
+                if button_rect_tuto.collidepoint(pos):
+                    return 2
                 if button_rect_quit.collidepoint(pos):
                     running = False
                     return 0

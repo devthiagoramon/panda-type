@@ -1,5 +1,6 @@
 import pygame
 import screens.main_screen as ms
+import screens.tutorial_main_screen as ts
 
 pygame.init()
 size_screen = (800, 600)
@@ -12,6 +13,8 @@ def main():
     option = ms.main_screen()
     if option == 1:
         pass
+    elif option == 2:
+        ts.main()
     else:
         pygame.quit()
 
