@@ -40,7 +40,7 @@ def main():
         'q': 'left_pinky', 'a': 'left_pinky', 'z': 'left_pinky',
         'w': 'left_ring', 's': 'left_ring', 'x': 'left_ring',
         'e': 'left_middle', 'd': 'left_middle', 'c': 'left_middle',
-        'r': 'left_index', 'f': 'left_index', 'v': 'left_index',
+        'r': 'left_index', 'f': 'left_index', 'v': 'left_index', 'g': 'left_index',
         'u': 'right_index', 'j': 'right_index', 'm': 'right_index',
         'i': 'right_middle', 'k': 'right_middle',
         'o': 'right_ring', 'l': 'right_ring',
@@ -108,16 +108,24 @@ def main():
         next_letter = current_word[len(typed_word)].lower() if len(typed_word) < len(current_word) else ""
         dedo_marcado = tecla_para_dedo.get(next_letter)
 
+        # Dicionário com ajustes mais para cima e à direita
+        posicoes_dedos = {
+            'left_pinky': (40, 400),  # Dedo mínimo esquerdo
+            'left_ring': (60, 360),  # Dedo anelar esquerdo
+            'left_middle': (100, 340),  # Dedo médio esquerdo
+            'left_index': (135, 370),  # Dedo indicador esquerdo
+            'right_index': (850, 400),  # Dedo indicador direito
+            'right_middle': (870, 410),  # Dedo médio direito
+            'right_ring': (890, 420),  # Dedo anelar direito
+            'right_pinky': (910, 430)  # Dedo mínimo direito
+        }
+
         # Desenhar a marcação na ponta do dedo correto
-        if dedo_marcado:
-            if "left" in dedo_marcado:
-                pos_x = 70 if 'pinky' in dedo_marcado else 90  # Ajustar posições conforme o dedo
-                pos_y = 360
-                pygame.draw.circle(win, BLUE, (pos_x, pos_y), 10)  # Marca na mão esquerda
-            elif "right" in dedo_marcado:
-                pos_x = 850 if 'pinky' in dedo_marcado else 870  # Ajustar posições conforme o dedo
-                pos_y = 360
-                pygame.draw.circle(win, BLUE, (pos_x, pos_y), 10)
+        if dedo_marcado and dedo_marcado in posicoes_dedos:
+            pos_x, pos_y = posicoes_dedos[dedo_marcado]
+            pygame.draw.circle(win, BLUE, (pos_x, pos_y), 10)
+
+
 
     # Função para exibir a palavra e a pontuação
     def draw_word_and_score():
