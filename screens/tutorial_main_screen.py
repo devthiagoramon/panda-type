@@ -2,13 +2,13 @@ import pygame
 from utils import constants
 
 
-size_screen = (800, 600)
-screen = pygame.display.set_mode(size_screen)
-game_clock = pygame.time.Clock()
-
 
 def main():
     pygame.init()
+    size_screen = (800, 600)
+    screen = pygame.display.set_mode(size_screen)
+    game_clock = pygame.time.Clock()
+
     running = True
     screen.fill(constants.COLOR_BG)
 
