@@ -1,6 +1,7 @@
 import pygame
 import screens.main_screen as ms
 import screens.tutorial_main_screen as ts
+import screens.difficulty_screen as diffscreen
 
 pygame.init()
 size_screen = (800, 600)
@@ -12,7 +13,7 @@ pygame.display.set_caption('Panda Type')
 def main():
     option = ms.main_screen()
     if option == 1:
-        pass
+        diffscreen.main()
     elif option == 2:
         ts.main()
     else:

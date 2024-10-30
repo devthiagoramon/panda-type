@@ -3,9 +3,6 @@ import random as rand
 
 from utils import constants
 
-size_screen = (800, 600)
-screen = pygame.display.set_mode(size_screen)
-game_clock = pygame.time.Clock()
 random_words = []
 
 
@@ -19,12 +16,16 @@ def read_random_words():
 # A função main screen vai exibir a tela principal do jogo e oferecer como opção
 # iniciar (1) ou sair (0) do jogo
 def main_screen():
+    size_screen = (800, 600)
+    screen = pygame.display.set_mode(size_screen)
+    game_clock = pygame.time.Clock()
     read_random_words()
 
     running = True
     screen.fill(constants.COLOR_BG)
 
-    container_screen = pygame.Rect((screen.get_width()/2)-(400/2), (screen.get_height() / 2)-(450/2), 400, 450)
+    container_screen = pygame.Rect((screen.get_width() / 2) - (400 / 2), (screen.get_height() / 2) - (450 / 2), 400,
+                                   450)
 
     # Buttons
     button_rect_init = pygame.Rect((screen.get_width() / 2) - (300 / 2), screen.get_height() / 2 - 100, 300, 75)
