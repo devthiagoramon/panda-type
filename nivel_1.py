@@ -13,16 +13,17 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
+BLUE = (0, 0, 255)
 FONT = pygame.font.SysFont("Arial", 32)
 
-left_hand = pygame.image.load("assets/left_hand.png")
-right_hand = pygame.image.load("assets/right_hand.png")
+
+mao_esquerda = pygame.image.load("assets/left_hand.png")
+mao_direita = pygame.image.load("assets/right_hand.png")
+
+mao_esquerda = pygame.transform.scale(mao_esquerda, (150, 200))
+mao_direita = pygame.transform.scale(mao_direita, (150, 200))
 
 
-left_hand = pygame.transform.scale(left_hand, (150, 200))
-right_hand = pygame.transform.scale(right_hand, (150, 200))
-
-# Palavras e variáveis do jogo
 words = ["Casa", "Faca", "Arara", "Adaga", "Vaca", "Reta"]
 current_word = random.choice(words)
 typed_word = ""
@@ -30,12 +31,24 @@ score = 0
 vidas = 3
 error_made = False
 
-# Temporizador
+
 time_limit = 20000
 start_time = pygame.time.get_ticks()
 progress_bar_width = 300
 
-# Função para desenhar o teclado
+
+tecla_para_dedo = {
+    'q': 'left_pinky', 'a': 'left_pinky', 'z': 'left_pinky',
+    'w': 'left_ring', 's': 'left_ring', 'x': 'left_ring',
+    'e': 'left_middle', 'd': 'left_middle', 'c': 'left_middle',
+    'r': 'left_index', 'f': 'left_index', 'v': 'left_index',
+    'u': 'right_index', 'j': 'right_index', 'm': 'right_index',
+    'i': 'right_middle', 'k': 'right_middle',
+    'o': 'right_ring', 'l': 'right_ring',
+    'p': 'right_pinky'
+}
+
+# Draw keyboard
 def draw_keyboard():
     x, y = 200, 300  # Ajuste para centralizar o teclado
     row_gap, key_gap = 60, 50
@@ -88,11 +101,26 @@ def draw_keyboard():
 # Função para desenhar as imagens das mãos
 def draw_hands():
     # Exibir a mão esquerda à esquerda do teclado
-    win.blit(left_hand, (30, 320))
+    win.blit(mao_esquerda, (30, 320))
     # Exibir a mão direita à direita do teclado
-    win.blit(right_hand, (820, 320))
+    win.blit(mao_direita, (820, 320))
 
-# Função para exibir a palavra e a pontuação
+    # Determinar o dedo a marcar
+    next_letter = current_word[len(typed_word)].lower() if len(typed_word) < len(current_word) else ""
+    dedo_marcado = tecla_para_dedo.get(next_letter)
+
+    # Desenhar a marcação na ponta do dedo correto
+    if dedo_marcado:
+        if "left" in dedo_marcado:
+            pos_x = 70 if 'pinky' in dedo_marcado else 90  # Ajustar posições conforme o dedo
+            pos_y = 360
+            pygame.draw.circle(win, BLUE, (pos_x, pos_y), 10)  # Marca na mão esquerda
+        elif "right" in dedo_marcado:
+            pos_x = 850 if 'pinky' in dedo_marcado else 870  # Ajustar posições conforme o dedo
+            pos_y = 360
+            pygame.draw.circle(win, BLUE, (pos_x, pos_y), 10)  # Marca na mão direita
+
+
 def draw_word_and_score():
     word_text = FONT.render("Digite: " + current_word, True, BLACK)
     win.blit(word_text, (100, 200))
