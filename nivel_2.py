@@ -1,7 +1,6 @@
 import pygame
 import random
 
-
 # Loop principal do jogo
 def main():
     WIDTH, HEIGHT = 800, 600
@@ -14,6 +13,10 @@ def main():
     RED = (255, 0, 0)
 
     FONT = pygame.font.SysFont("Arial", 32)
+
+    # Carrega a imagem do panda
+    panda_img = pygame.image.load("assets/panda.jpg")
+    panda_img = pygame.transform.scale(panda_img, (100, 100))  # Redimensiona se necessário
 
     words = ["Girafa", "Panda", "Sapato", "Cozinha", "Mangueira"]
     current_word = random.choice(words)
@@ -100,6 +103,7 @@ def main():
         score_text = FONT.render("Pontuação Final: " + str(score), True, BLACK)
         win.blit(victory_text, (250, 250))
         win.blit(score_text, (250, 300))
+        win.blit(panda_img, (WIDTH - 110, 10))  # Exibe a imagem no canto superior direito
         pygame.display.flip()
         pygame.time.delay(3000)
 
@@ -109,6 +113,7 @@ def main():
         score_text = FONT.render("Pontuação Final: " + str(score), True, BLACK)
         win.blit(defeat_text, (250, 250))
         win.blit(score_text, (250, 300))
+        win.blit(panda_img, (WIDTH - 110, 10))  # Exibe a imagem no canto superior direito
         pygame.display.flip()
         pygame.time.delay(3000)
 
@@ -172,3 +177,6 @@ def main():
                     shift_pressed = False  # Desativa o estado do Shift
 
         pygame.display.flip()
+
+
+pygame.quit()
