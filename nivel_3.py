@@ -6,7 +6,7 @@ import random
 def main():
     WIDTH, HEIGHT = 800, 600
     win = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption("Jogo de Digitação - Nível Difícil")
+    pygame.display.set_caption("Panda Type - Nível Difícil")
 
     WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
