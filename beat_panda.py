@@ -1,8 +1,17 @@
+import librosa
 import pygame
 import random
 import time
 
+# Carregar a música e identificar os tempos das batidas
+audio_path = 'assets/Travelers.mp3'  # Caminho para o arquivo de áudio
+y, sr = librosa.load(audio_path, sr=None)
+tempo, beat_frames = librosa.beat.beat_track(y=y, sr=sr)
 
+# Converter os frames das batidas em tempos em segundos
+beat_times = librosa.frames_to_time(beat_frames, sr=sr)
+
+# Inicializar o Pygame
 pygame.init()
 
 SCREEN_WIDTH = 600
@@ -16,39 +25,36 @@ BLACK = (0, 0, 0)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 
-
 font = pygame.font.Font(None, 36)
 
-
 TARGET_Y = SCREEN_HEIGHT - 50
-
-
 LETTER_SPEED = 2
-LETTER_INTERVAL = 1.5
-
 
 falling_letters = []
-last_letter_time = time.time()
-
-
 score = 0
 max_health = 100
 current_health = max_health
 health_loss_per_miss = 20
 
-# Combo Multiplier
+# Variáveis de combo
 combo_multiplier = 1
 combo_streak = 0
 combo_levels = [1, 2, 4, 8]
 
-# Create letter
+# Música e sincronização com ritmo
+pygame.mixer.init()
+pygame.mixer.music.load(audio_path)
+pygame.mixer.music.play()
+start_time = time.time()
+
+# Função para criar uma letra
 def create_letter():
     letter = chr(random.randint(65, 90))
     x_pos = random.randint(50, SCREEN_WIDTH - 50)
     y_pos = 0
     return {"letter": letter, "x": x_pos, "y": y_pos, "hit": False}
 
-# Health bar
+# Barra de saúde
 def draw_health_bar():
     bar_width = 200
     bar_height = 20
@@ -56,7 +62,7 @@ def draw_health_bar():
     pygame.draw.rect(screen, RED, (10, 40, bar_width, bar_height))
     pygame.draw.rect(screen, GREEN, (10, 40, bar_width * health_ratio, bar_height))
 
-# Multiplier
+# Atualizar multiplicador
 def update_multiplier(hit):
     global combo_streak, combo_multiplier
     if hit:
@@ -72,15 +78,16 @@ def update_multiplier(hit):
         if combo_multiplier > 1:
             combo_multiplier = combo_levels[combo_levels.index(combo_multiplier) - 1]
 
-# main game loop
+# Loop principal do jogo
 running = True
 while running:
     screen.fill(BLACK)
-    current_time = time.time()
+    current_time = time.time() - start_time
 
-    if current_time - last_letter_time > LETTER_INTERVAL:
+    # Criar letras de acordo com as batidas
+    if beat_times.size > 0 and current_time >= beat_times[0]:
         falling_letters.append(create_letter())
-        last_letter_time = current_time
+        beat_times = beat_times[1:]  # Remover o tempo já usado
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -115,7 +122,6 @@ while running:
         text = font.render(letter["letter"], True, color)
         screen.blit(text, (letter["x"], letter["y"]))
 
-
     falling_letters = [letter for letter in falling_letters if letter["y"] <= SCREEN_HEIGHT and not letter["hit"]]
 
     pygame.draw.line(screen, GREEN, (0, TARGET_Y), (SCREEN_WIDTH, TARGET_Y), 2)
@@ -129,6 +135,6 @@ while running:
     draw_health_bar()
 
     pygame.display.flip()
-    pygame.time.delay(30)
+    pygame.time.delay(15)
 
 pygame.quit()
