@@ -49,9 +49,9 @@ start_time = time.time()
 
 # Função para criar uma letra
 def create_letter():
-    letter = chr(random.randint(65, 90))
-    x_pos = random.randint(50, SCREEN_WIDTH - 50)
-    y_pos = 0
+    letter = chr(random.randint(65, 90))  # Cria uma letra aleatória
+    x_pos = random.randint(50, SCREEN_WIDTH - 50)  # Posição X aleatória
+    y_pos = 0  # Começa no topo da tela
     return {"letter": letter, "x": x_pos, "y": y_pos, "hit": False}
 
 # Barra de saúde
@@ -84,9 +84,17 @@ while running:
     screen.fill(BLACK)
     current_time = time.time() - start_time
 
-    # Criar letras de acordo com as batidas
+    # Interromper a música após 60 segundos
+    if current_time >= 60:
+        pygame.mixer.music.stop()  # Interrompe a música após 60 segundos
+        print("Música terminou!")
+        running = False  # Finaliza o jogo
+
+    # Criar menos letras de acordo com as batidas
     if beat_times.size > 0 and current_time >= beat_times[0]:
-        falling_letters.append(create_letter())
+        # Adicionar uma letra a cada 2 batidas (modifiquei para reduzir as letras)
+        if len(falling_letters) < 3:  # Limite no número de letras caindo
+            falling_letters.append(create_letter())  # Cria uma única letra para cada batida
         beat_times = beat_times[1:]  # Remover o tempo já usado
 
     for event in pygame.event.get():
