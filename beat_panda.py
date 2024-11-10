@@ -47,6 +47,16 @@ pygame.mixer.music.load(audio_path)
 pygame.mixer.music.play()
 start_time = time.time()
 
+# Carregar as imagens das mãos
+mao_esquerda = pygame.image.load("assets/left_hand.png")
+mao_direita = pygame.image.load("assets/right_hand.png")
+
+# Ajustar o tamanho das mãos com base na resolução da tela
+hand_width = SCREEN_WIDTH // 4  # As mãos ocuparão 1/4 da largura da tela
+hand_height = SCREEN_HEIGHT // 2  # As mãos terão metade da altura da tela
+mao_esquerda = pygame.transform.scale(mao_esquerda, (hand_width, hand_height))
+mao_direita = pygame.transform.scale(mao_direita, (hand_width, hand_height))
+
 # Função para criar uma letra
 def create_letter():
     letter = chr(random.randint(65, 90))  # Cria uma letra aleatória
@@ -92,7 +102,7 @@ while running:
 
     # Criar menos letras de acordo com as batidas
     if beat_times.size > 0 and current_time >= beat_times[0]:
-        # Adicionar uma letra a cada 2 batidas (modifiquei para reduzir as letras)
+        # Agora as letras são geradas apenas a cada 3 batidas (modifiquei para reduzir as letras)
         if len(falling_letters) < 3:  # Limite no número de letras caindo
             falling_letters.append(create_letter())  # Cria uma única letra para cada batida
         beat_times = beat_times[1:]  # Remover o tempo já usado
@@ -122,11 +132,16 @@ while running:
         print("Game Over!")
         running = False
 
+    # Exibir as imagens das mãos
+    screen.blit(mao_esquerda, (50, SCREEN_HEIGHT - hand_height - 20))  # Posição da mão esquerda
+    screen.blit(mao_direita, (SCREEN_WIDTH - hand_width - 50, SCREEN_HEIGHT - hand_height - 20))  # Posição da mão direita
+
+    # Desenhar as letras em vermelho
     for letter in falling_letters:
         if letter["hit"]:
             color = GREEN if letter["y"] <= SCREEN_HEIGHT else RED
         else:
-            color = WHITE
+            color = RED  # Cor vermelha para as letras
         text = font.render(letter["letter"], True, color)
         screen.blit(text, (letter["x"], letter["y"]))
 
