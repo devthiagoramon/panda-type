@@ -73,9 +73,11 @@ pygame.mixer.music.load(audio_path)
 pygame.mixer.music.play()
 start_time = time.time()
 
-# Carregar as imagens das mãos
+# Carregar as imagens
 mao_esquerda = pygame.image.load("assets/left_hand.png")
 mao_direita = pygame.image.load("assets/right_hand.png")
+
+
 
 # Função para criar uma letra
 def create_letter():
