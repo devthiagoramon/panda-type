@@ -11,6 +11,17 @@ tempo, beat_frames = librosa.beat.beat_track(y=y, sr=sr)
 # Converter os frames das batidas em tempos em segundos
 beat_times = librosa.frames_to_time(beat_frames, sr=sr)
 
+tecla_para_dedo = {
+    'q': 'left_pinky', 'a': 'left_pinky', 'z': 'left_pinky',
+    'w': 'left_ring', 's': 'left_ring', 'x': 'left_ring',
+    'e': 'left_middle', 'd': 'left_middle', 'c': 'left_middle',
+    'r': 'left_index', 'f': 'left_index', 'v': 'left_index', 'g': 'left_index',
+    'u': 'right_index', 'j': 'right_index', 'm': 'right_index',
+    'i': 'right_middle', 'k': 'right_middle',
+    'o': 'right_ring', 'l': 'right_ring',
+    'p': 'right_pinky'
+}
+
 # Inicializar o Pygame
 pygame.init()
 
@@ -24,6 +35,21 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
+PURPLE = (128, 0, 128)
+YELLOW = (255, 255, 0)
+BLUE = (0, 0, 255)
+
+# Cores dos dedos
+dedo_cores = {
+    'left_pinky': PURPLE,
+    'right_pinky': PURPLE,
+    'left_ring': YELLOW,
+    'right_ring': YELLOW,
+    'left_middle': BLUE,
+    'right_middle': BLUE,
+    'left_index': GREEN,
+    'right_index': GREEN
+}
 
 font = pygame.font.Font(None, 36)
 
@@ -50,12 +76,6 @@ start_time = time.time()
 # Carregar as imagens das mãos
 mao_esquerda = pygame.image.load("assets/left_hand.png")
 mao_direita = pygame.image.load("assets/right_hand.png")
-
-# Ajustar o tamanho das mãos com base na resolução da tela
-hand_width = SCREEN_WIDTH // 4  # As mãos ocuparão 1/4 da largura da tela
-hand_height = SCREEN_HEIGHT // 2  # As mãos terão metade da altura da tela
-mao_esquerda = pygame.transform.scale(mao_esquerda, (hand_width, hand_height))
-mao_direita = pygame.transform.scale(mao_direita, (hand_width, hand_height))
 
 # Função para criar uma letra
 def create_letter():
@@ -102,7 +122,6 @@ while running:
 
     # Criar menos letras de acordo com as batidas
     if beat_times.size > 0 and current_time >= beat_times[0]:
-        # Agora as letras são geradas apenas a cada 3 batidas (modifiquei para reduzir as letras)
         if len(falling_letters) < 3:  # Limite no número de letras caindo
             falling_letters.append(create_letter())  # Cria uma única letra para cada batida
         beat_times = beat_times[1:]  # Remover o tempo já usado
@@ -132,16 +151,17 @@ while running:
         print("Game Over!")
         running = False
 
-    # Exibir as imagens das mãos
-    screen.blit(mao_esquerda, (50, SCREEN_HEIGHT - hand_height - 20))  # Posição da mão esquerda
-    screen.blit(mao_direita, (SCREEN_WIDTH - hand_width - 50, SCREEN_HEIGHT - hand_height - 20))  # Posição da mão direita
-
-    # Desenhar as letras em vermelho
+    # Desenhar as letras com cores diferentes conforme o dedo
     for letter in falling_letters:
         if letter["hit"]:
             color = GREEN if letter["y"] <= SCREEN_HEIGHT else RED
         else:
-            color = RED  # Cor vermelha para as letras
+            # Obter o dedo correspondente à letra e pegar a cor associada
+            dedo = tecla_para_dedo.get(letter["letter"].lower(), None)
+            if dedo:
+                color = dedo_cores.get(dedo, RED)  # Usar cor do dedo ou vermelho como padrão
+            else:
+                color = RED
         text = font.render(letter["letter"], True, color)
         screen.blit(text, (letter["x"], letter["y"]))
 
