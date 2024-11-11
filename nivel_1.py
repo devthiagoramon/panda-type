@@ -28,7 +28,7 @@ def main():
     current_word = random.choice(words)
     typed_word = ""
     score = 0
-    vidas = 3
+    vidas = 4
     error_made = False
 
     # Temporizador

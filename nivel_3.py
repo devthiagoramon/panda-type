@@ -24,11 +24,11 @@ def main():
     mao_direita = pygame.transform.scale(mao_direita, (150, 200))
 
 
-    words = ["Paralelepípedo", "Mecânico", "Ornitorrinco", "Presidiário", "Austríaco"]
+    words = ["Paralelepípedo", "Bicicleta", "Ornitorrinco", "Presidiário", "Austríaco", "Maracujá", "Pássaro", "Países"]
     current_word = random.choice(words)
     typed_word = ""
     score = 0
-    vidas = 3
+    vidas = 4
     error_made = False
 
     # Temporizador

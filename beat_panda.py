@@ -58,7 +58,7 @@ LETTER_SPEED = 2
 
 falling_letters = []
 score = 0
-max_health = 100
+max_health = 160
 current_health = max_health
 health_loss_per_miss = 20
 
@@ -77,6 +77,9 @@ start_time = time.time()
 mao_esquerda = pygame.image.load("assets/left_hand.png")
 mao_direita = pygame.image.load("assets/right_hand.png")
 
+# Carregar a imagem de fundo
+background_image = pygame.image.load("assets/wallpaper.jpg")
+background_image = pygame.transform.scale(background_image, (600, 438))
 
 
 # Função para criar uma letra
@@ -133,7 +136,7 @@ def victory_screen():
 # Loop principal do jogo
 running = True
 while running:
-    screen.fill(BLACK)
+    screen.blit(background_image, (0, 0))  # Desenha a imagem de fundo
     current_time = time.time() - start_time
 
     # Victory condition

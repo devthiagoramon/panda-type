@@ -14,7 +14,6 @@ pygame.display.set_caption('Beat Panda')
 menu_music = 'assets/menu_music.mp3'
 pygame.mixer.init()
 pygame.mixer.music.load(menu_music)
-pygame.mixer.music.play()
 pygame.mixer.music.play(start=15)
 
 # Carregar a imagem do Panda DJ
@@ -25,6 +24,13 @@ except:
     panda_dj = pygame.Surface(size_screen)
     panda_dj.fill((0, 0, 0))
 
+# Carregar a imagem que será exibida ao pressionar ENTER
+try:
+    imagem_nova = pygame.image.load('assets/maos.jpg')  # Substitua pelo seu arquivo de imagem
+    imagem_nova = pygame.transform.scale(imagem_nova, (600, 400))  # Ajuste o tamanho se necessário
+except:
+    imagem_nova = pygame.Surface(size_screen)
+    imagem_nova.fill((255, 0, 0))  # Cor de fundo caso a imagem não seja carregada
 
 def draw_menu():
     screen.fill((0, 0, 0))
@@ -49,6 +55,7 @@ def show_menu():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     in_menu = False
+                    show_new_image()  # Chama a função que exibe a nova imagem
                 elif event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     sys.exit()
@@ -57,6 +64,37 @@ def show_menu():
         game_clock.tick(30)
 
 
+def show_new_image():
+    showing_instructions = True
+    font = pygame.font.Font(None, 36)
+
+    while showing_instructions:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    showing_instructions = False  # Sai do loop e inicia o jogo
+                elif event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()
+
+        # Exibir fundo e imagem
+        screen.fill((0, 0, 0))
+        screen.blit(imagem_nova, (0, 50))  # Exibe a nova imagem, deslocada para baixo
+
+        # Exibir instrução acima da imagem
+        instruction_text = font.render("Aperte as teclas conforme as cores da imagem", True, (255, 255, 255))
+        instruction_rect = instruction_text.get_rect(center=(size_screen[0] // 2, 30))
+        screen.blit(instruction_text, instruction_rect)
+
+        pygame.display.flip()
+        game_clock.tick(30)
+
+    # Após pressionar ENTER, inicia o jogo
+    import beat_panda
+    beat_panda.start_game()
 
 
 def main():
@@ -64,12 +102,7 @@ def main():
         # Primeiro mostra o menu
         show_menu()
 
-        # Só depois que o menu terminar (quando ENTER for pressionado),
-        # importamos e iniciamos o jogo
-        import beat_panda
-        beat_panda.start_game()
-
-        # Se o jogo terminar, voltamos ao menu
+        # Após sair do menu, inicia o jogo
         game_clock.tick(30)
 
 
