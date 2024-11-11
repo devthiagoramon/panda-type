@@ -1,9 +1,6 @@
 import pygame
 import sys
 
-# Não importamos beat_panda aqui no início
-# Faremos a importação apenas quando necessário
-
 pygame.init()
 
 # Tamanho da tela
@@ -13,6 +10,12 @@ game_clock = pygame.time.Clock()
 
 # Definir o título do jogo
 pygame.display.set_caption('Beat Panda')
+
+menu_music = 'assets/menu_music.mp3'
+pygame.mixer.init()
+pygame.mixer.music.load(menu_music)
+pygame.mixer.music.play()
+pygame.mixer.music.play(start=15)
 
 # Carregar a imagem do Panda DJ
 try:
@@ -52,6 +55,8 @@ def show_menu():
 
         draw_menu()
         game_clock.tick(30)
+
+
 
 
 def main():
