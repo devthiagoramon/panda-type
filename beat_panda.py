@@ -110,15 +110,33 @@ def update_multiplier(hit):
         if combo_multiplier > 1:
             combo_multiplier = combo_levels[combo_levels.index(combo_multiplier) - 1]
 
+# Tela de derrota
+def game_over_screen():
+    pygame.mixer.music.stop()  # Interrompe a música ao exibir a tela de derrota
+    screen.fill(BLACK)
+    game_over_text = font.render("Você perdeu :(", True, RED)
+    screen.blit(game_over_text, (SCREEN_WIDTH // 2 - game_over_text.get_width() // 2, SCREEN_HEIGHT // 2))
+    pygame.display.flip()
+    pygame.time.delay(2000)  # Mantém a tela de derrota por 2 segundos
+
+# Tela de vitória
+def victory_screen():
+    screen.fill(BLACK)
+    game_over_text = font.render("Você ganhou!", True, GREEN)
+    screen.blit(game_over_text, (SCREEN_WIDTH // 2 - game_over_text.get_width() // 2, SCREEN_HEIGHT // 2))
+    pygame.display.flip()
+    pygame.time.delay(2000)  # Mantém a tela de derrota por 2 segundos
+
+
 # Loop principal do jogo
 running = True
 while running:
     screen.fill(BLACK)
     current_time = time.time() - start_time
 
-    # Interromper a música após 60 segundos
-    if current_time >= 60:
-        pygame.mixer.music.stop()  # Interrompe a música após 60 segundos
+    # Victory condition
+    if current_time >= 212:
+        victory_screen()
         print("Música terminou!")
         running = False  # Finaliza o jogo
 
@@ -151,6 +169,7 @@ while running:
 
     if current_health <= 0:
         print("Game Over!")
+        game_over_screen()
         running = False
 
     # Desenhar as letras com cores diferentes conforme o dedo
