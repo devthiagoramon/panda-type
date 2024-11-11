@@ -115,9 +115,11 @@ def game_over_screen():
     pygame.mixer.music.stop()  # Interrompe a música ao exibir a tela de derrota
     screen.fill(BLACK)
     game_over_text = font.render("Você perdeu :(", True, RED)
-    screen.blit(game_over_text, (SCREEN_WIDTH // 2 - game_over_text.get_width() // 2, SCREEN_HEIGHT // 2))
+    score_text = font.render(f"Sua Pontuação: {score}", True, WHITE)
+    screen.blit(game_over_text, (SCREEN_WIDTH // 2 - game_over_text.get_width() // 2, SCREEN_HEIGHT // 2 - 20))
+    screen.blit(score_text, (SCREEN_WIDTH // 2 - score_text.get_width() // 2, SCREEN_HEIGHT // 2 + 20))
     pygame.display.flip()
-    pygame.time.delay(2000)  # Mantém a tela de derrota por 2 segundos
+    pygame.time.delay(4000)  # Mantém a tela de derrota por 4 segundos
 
 # Tela de vitória
 def victory_screen():
@@ -125,7 +127,7 @@ def victory_screen():
     game_over_text = font.render("Você ganhou!", True, GREEN)
     screen.blit(game_over_text, (SCREEN_WIDTH // 2 - game_over_text.get_width() // 2, SCREEN_HEIGHT // 2))
     pygame.display.flip()
-    pygame.time.delay(2000)  # Mantém a tela de derrota por 2 segundos
+    pygame.time.delay(4000)  # Mantém a tela de vitória por 4 segundos
 
 
 # Loop principal do jogo
