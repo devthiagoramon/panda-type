@@ -15,8 +15,8 @@ tecla_para_dedo = {
     'q': 'left_pinky', 'a': 'left_pinky', 'z': 'left_pinky',
     'w': 'left_ring', 's': 'left_ring', 'x': 'left_ring',
     'e': 'left_middle', 'd': 'left_middle', 'c': 'left_middle',
-    'r': 'left_index', 'f': 'left_index', 'v': 'left_index', 'g': 'left_index',
-    'u': 'right_index', 'j': 'right_index', 'm': 'right_index',
+    'r': 'left_index', 'f': 'left_index', 'v': 'left_index', 't': 'left_index', 'g': 'left_index', 'b': 'left_index',
+    'y': 'right_index', 'h': 'right_index', 'n': 'right_index', 'u': 'right_index', 'j': 'right_index', 'm': 'right_index',
     'i': 'right_middle', 'k': 'right_middle',
     'o': 'right_ring', 'l': 'right_ring',
     'p': 'right_pinky'
