@@ -1,209 +1,182 @@
-import librosa
 import pygame
-import random
 import time
+import librosa
 
-# Carregar a música e identificar os tempos das batidas
-audio_path = 'assets/Travelers.mp3'  # Caminho para o arquivo de áudio
-y, sr = librosa.load(audio_path, sr=None)
-tempo, beat_frames = librosa.beat.beat_track(y=y, sr=sr)
-
-# Converter os frames das batidas em tempos em segundos
-beat_times = librosa.frames_to_time(beat_frames, sr=sr)
-
-tecla_para_dedo = {
-    'q': 'left_pinky', 'a': 'left_pinky', 'z': 'left_pinky',
-    'w': 'left_ring', 's': 'left_ring', 'x': 'left_ring',
-    'e': 'left_middle', 'd': 'left_middle', 'c': 'left_middle',
-    'r': 'left_index', 'f': 'left_index', 'v': 'left_index', 't': 'left_index', 'g': 'left_index', 'b': 'left_index',
-    'y': 'right_index', 'h': 'right_index', 'n': 'right_index', 'u': 'right_index', 'j': 'right_index', 'm': 'right_index',
-    'i': 'right_middle', 'k': 'right_middle',
-    'o': 'right_ring', 'l': 'right_ring',
-    'p': 'right_pinky'
-}
-
-# Inicializar o Pygame
-pygame.init()
-
-SCREEN_WIDTH = 600
-SCREEN_HEIGHT = 400
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("Jogo de Ritmo - Digitação")
-
-# Cores
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-GREEN = (0, 255, 0)
-RED = (255, 0, 0)
-PURPLE = (128, 0, 128)
-YELLOW = (255, 255, 0)
-BLUE = (0, 0, 255)
-
-# Cores dos dedos
-dedo_cores = {
-    'left_pinky': PURPLE,
-    'right_pinky': PURPLE,
-    'left_ring': YELLOW,
-    'right_ring': YELLOW,
-    'left_middle': BLUE,
-    'right_middle': BLUE,
-    'left_index': GREEN,
-    'right_index': GREEN
-}
-
-font = pygame.font.Font(None, 36)
-
-TARGET_Y = SCREEN_HEIGHT - 50
-LETTER_SPEED = 2
-
-falling_letters = []
-score = 0
-max_health = 160
-current_health = max_health
-health_loss_per_miss = 20
-
-# Variáveis de combo
-combo_multiplier = 1
-combo_streak = 0
-combo_levels = [1, 2, 4, 8]
-
-# Música e sincronização com ritmo
-pygame.mixer.init()
-pygame.mixer.music.load(audio_path)
-pygame.mixer.music.play()
-start_time = time.time()
-
-# Carregar as imagens
-mao_esquerda = pygame.image.load("assets/left_hand.png")
-mao_direita = pygame.image.load("assets/right_hand.png")
-
-# Carregar a imagem de fundo
-background_image = pygame.image.load("assets/wallpaper.jpg")
-background_image = pygame.transform.scale(background_image, (600, 438))
+from letter import Letter
+from healthbar import HealthBar
+from multiplier import Multiplier
 
 
-# Função para criar uma letra
-def create_letter():
-    letter = chr(random.randint(65, 90))  # Cria uma letra aleatória
-    x_pos = random.randint(50, SCREEN_WIDTH - 50)  # Posição X aleatória
-    y_pos = 0  # Começa no topo da tela
-    return {"letter": letter, "x": x_pos, "y": y_pos, "hit": False}
+class Game:
+    def __init__(self):
+        pygame.init()
 
-# Barra de saúde
-def draw_health_bar():
-    bar_width = 200
-    bar_height = 20
-    health_ratio = current_health / max_health
-    pygame.draw.rect(screen, RED, (10, 40, bar_width, bar_height))
-    pygame.draw.rect(screen, GREEN, (10, 40, bar_width * health_ratio, bar_height))
+        self.SCREEN_WIDTH = 600
+        self.SCREEN_HEIGHT = 400
+        self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
+        pygame.display.set_caption("Jogo de Ritmo - Digitação")
 
-# Atualizar multiplicador
-def update_multiplier(hit):
-    global combo_streak, combo_multiplier
-    if hit:
-        combo_streak += 1
-        if combo_streak >= 8:
-            combo_multiplier = 8
-        elif combo_streak >= 4:
-            combo_multiplier = 4
-        elif combo_streak >= 2:
-            combo_multiplier = 2
-    else:
-        combo_streak = max(0, combo_streak - 1)
-        if combo_multiplier > 1:
-            combo_multiplier = combo_levels[combo_levels.index(combo_multiplier) - 1]
+        self.WHITE = (255, 255, 255)
+        self.BLACK = (0, 0, 0)
+        self.GREEN = (0, 255, 0)
+        self.RED = (255, 0, 0)
+        self.PURPLE = (128, 0, 128)
+        self.YELLOW = (255, 255, 0)
+        self.BLUE = (0, 0, 255)
 
-# Tela de derrota
-def game_over_screen():
-    pygame.mixer.music.stop()  # Interrompe a música ao exibir a tela de derrota
-    screen.fill(BLACK)
-    game_over_text = font.render("Você perdeu :(", True, RED)
-    score_text = font.render(f"Sua Pontuação: {score}", True, WHITE)
-    screen.blit(game_over_text, (SCREEN_WIDTH // 2 - game_over_text.get_width() // 2, SCREEN_HEIGHT // 2 - 20))
-    screen.blit(score_text, (SCREEN_WIDTH // 2 - score_text.get_width() // 2, SCREEN_HEIGHT // 2 + 20))
-    pygame.display.flip()
-    pygame.time.delay(4000)  # Mantém a tela de derrota por 4 segundos
+        self.mao_esquerda = pygame.image.load("assets/left_hand.png")
+        self.mao_direita = pygame.image.load("assets/right_hand.png")
 
-# Tela de vitória
-def victory_screen():
-    screen.fill(BLACK)
-    game_over_text = font.render("Você ganhou!", True, GREEN)
-    screen.blit(game_over_text, (SCREEN_WIDTH // 2 - game_over_text.get_width() // 2, SCREEN_HEIGHT // 2))
-    pygame.display.flip()
-    pygame.time.delay(4000)  # Mantém a tela de vitória por 4 segundos
+        self.font = pygame.font.Font(None, 36)
 
+        self.TARGET_Y = self.SCREEN_HEIGHT - 50
+        self.LETTER_SPEED = 2
+        self.falling_letters = []
+        self.score = 0
 
-# Loop principal do jogo
-running = True
-while running:
-    screen.blit(background_image, (0, 0))  # Desenha a imagem de fundo
-    current_time = time.time() - start_time
+        # Barra de saúde
+        self.health_bar = HealthBar(max_health=100, position=(10, 40), size=(200, 20))
+        self.health_loss_per_miss = 20
 
-    # Victory condition
-    if current_time >= 212:
-        victory_screen()
-        print("Música terminou!")
-        running = False  # Finaliza o jogo
+        # Multiplicador de combo
+        self.multiplier = Multiplier()
 
-    # Criar menos letras de acordo com as batidas
-    if beat_times.size > 0 and current_time >= beat_times[0]:
-        if len(falling_letters) < 3:  # Limite no número de letras caindo
-            falling_letters.append(create_letter())  # Cria uma única letra para cada batida
-        beat_times = beat_times[1:]  # Remover o tempo já usado
+        # Música e sincronização com ritmo
+        self.audio_path = 'assets/Travelers.mp3'  # Caminho para o arquivo de áudio
+        self.y_audio, self.sr_audio = librosa.load(self.audio_path, sr=None)
+        self.tempo, self.beat_frames = librosa.beat.beat_track(y=self.y_audio, sr=self.sr_audio)
+        self.beat_times = librosa.frames_to_time(self.beat_frames, sr=self.sr_audio)
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        elif event.type == pygame.KEYDOWN:
-            letter_hit = False
-            for letter in falling_letters:
-                if event.unicode.upper() == letter["letter"] and abs(letter["y"] - TARGET_Y) < 20:
-                    letter["hit"] = True
-                    score += 10 * combo_multiplier
-                    letter_hit = True
-                    break
-            update_multiplier(letter_hit)
+        pygame.mixer.init()
+        pygame.mixer.music.load(self.audio_path)
+        pygame.mixer.music.play()
+        self.start_time = time.time()
 
-    for letter in falling_letters:
-        if not letter["hit"]:
-            letter["y"] += LETTER_SPEED
-            if letter["y"] > SCREEN_HEIGHT:
-                letter["hit"] = True
-                current_health -= health_loss_per_miss
-                update_multiplier(False)
+        # Mapeamento de teclas para dedos
+        self.tecla_para_dedo = {
+            'q': 'left_pinky', 'a': 'left_pinky', 'z': 'left_pinky',
+            'w': 'left_ring', 's': 'left_ring', 'x': 'left_ring',
+            'e': 'left_middle', 'd': 'left_middle', 'c': 'left_middle',
+            'r': 'left_index', 'f': 'left_index', 'v': 'left_index', 't': 'left_index', 'g': 'left_index',
+            'b': 'left_index',
+            'y': 'right_index', 'h': 'right_index', 'n': 'right_index', 'u': 'right_index', 'j': 'right_index',
+            'm': 'right_index',
+            'i': 'right_middle', 'k': 'right_middle',
+            'o': 'right_ring', 'l': 'right_ring',
+            'p': 'right_pinky'
+        }
 
-    if current_health <= 0:
-        print("Game Over!")
-        game_over_screen()
-        running = False
+        # Cores dos dedos
+        self.dedo_cores = {
+            'left_pinky': self.PURPLE,
+            'right_pinky': self.PURPLE,
+            'left_ring': self.YELLOW,
+            'right_ring': self.YELLOW,
+            'left_middle': self.BLUE,
+            'right_middle': self.BLUE,
+            'left_index': self.GREEN,
+            'right_index': self.GREEN
+        }
 
-    # Desenhar as letras com cores diferentes conforme o dedo
-    for letter in falling_letters:
-        if letter["hit"]:
-            color = GREEN if letter["y"] <= SCREEN_HEIGHT else RED
-        else:
-            # Obter o dedo correspondente à letra e pegar a cor associada
-            dedo = tecla_para_dedo.get(letter["letter"].lower(), None)
-            if dedo:
-                color = dedo_cores.get(dedo, RED)  # Usar cor do dedo ou vermelho como padrão
-            else:
-                color = RED
-        text = font.render(letter["letter"], True, color)
-        screen.blit(text, (letter["x"], letter["y"]))
+    def create_letter(self):
+        x_range = (50, self.SCREEN_WIDTH - 50)
+        return Letter(x_range)
 
-    falling_letters = [letter for letter in falling_letters if letter["y"] <= SCREEN_HEIGHT and not letter["hit"]]
+    def game_over_screen(self):
+        pygame.mixer.music.stop()
+        self.screen.fill(self.BLACK)
+        game_over_text = self.font.render("Você perdeu :(", True, self.RED)
+        score_text = self.font.render(f"Sua Pontuação: {self.score}", True, self.WHITE)
+        self.screen.blit(game_over_text,
+                         (self.SCREEN_WIDTH // 2 - game_over_text.get_width() // 2, self.SCREEN_HEIGHT // 2 - 20))
+        self.screen.blit(score_text,
+                         (self.SCREEN_WIDTH // 2 - score_text.get_width() // 2, self.SCREEN_HEIGHT // 2 + 20))
+        pygame.display.flip()
+        pygame.time.delay(4000)
 
-    pygame.draw.line(screen, GREEN, (0, TARGET_Y), (SCREEN_WIDTH, TARGET_Y), 2)
+    def victory_screen(self):
+        self.screen.fill(self.BLACK)
+        victory_text = self.font.render("Você ganhou!", True, self.GREEN)
+        self.screen.blit(victory_text,
+                         (self.SCREEN_WIDTH // 2 - victory_text.get_width() // 2, self.SCREEN_HEIGHT // 2))
+        pygame.display.flip()
+        pygame.time.delay(4000)
 
-    score_text = font.render(f"Score: {score}", True, WHITE)
-    screen.blit(score_text, (10, 10))
+    def run(self):
+        running = True
+        while running:
+            self.screen.fill(self.BLACK)
+            current_time = time.time() - self.start_time
 
-    multiplier_text = font.render(f"Multiplier: x{combo_multiplier}", True, WHITE)
-    screen.blit(multiplier_text, (10, 60))
+            # Condição de vitória
+            if current_time >= 212:
+                self.victory_screen()
+                print("Música terminou!")
+                running = False  # Finaliza o jogo
 
-    draw_health_bar()
+            # Criar letras de acordo com as batidas
+            if self.beat_times.size > 0 and current_time >= self.beat_times[0]:
+                if len(self.falling_letters) < 3:
+                    self.falling_letters.append(self.create_letter())
+                self.beat_times = self.beat_times[1:]
 
-    pygame.display.flip()
-    pygame.time.delay(15)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                elif event.type == pygame.KEYDOWN:
+                    letter_hit = False
+                    for letter in self.falling_letters:
+                        if event.unicode.upper() == letter.letter and abs(letter.y - self.TARGET_Y) < 20:
+                            letter.hit = True
+                            self.score += 10 * self.multiplier.combo_multiplier
+                            letter_hit = True
+                            break
+                    self.multiplier.update(letter_hit)
 
-pygame.quit()
+            # Atualizar e desenhar letras
+            for letter in self.falling_letters:
+                if not letter.hit:
+                    letter.update_position(self.LETTER_SPEED)
+                    if letter.y > self.SCREEN_HEIGHT:
+                        letter.hit = True
+                        self.health_bar.reduce_health(self.health_loss_per_miss)
+                        self.multiplier.update(False)
+
+            if self.health_bar.current_health <= 0:
+                print("Game Over!")
+                self.game_over_screen()
+                running = False
+
+            # Desenhar letras
+            for letter in self.falling_letters:
+                if letter.hit:
+                    color = self.GREEN if letter.y <= self.SCREEN_HEIGHT else self.RED
+                else:
+                    dedo = self.tecla_para_dedo.get(letter.letter.lower(), None)
+                    if dedo:
+                        color = self.dedo_cores.get(dedo, self.RED)
+                    else:
+                        color = self.RED
+                letter.draw(self.screen, self.font, color)
+
+            # Remover letras que saíram da tela ou foram acertadas
+            self.falling_letters = [letter for letter in self.falling_letters if
+                                    letter.y <= self.SCREEN_HEIGHT and not letter.hit]
+
+            # Linha alvo
+            pygame.draw.line(self.screen, self.GREEN, (0, self.TARGET_Y), (self.SCREEN_WIDTH, self.TARGET_Y), 2)
+
+            # Exibir pontuação e multiplicador
+            score_text = self.font.render(f"Score: {self.score}", True, self.WHITE)
+            self.screen.blit(score_text, (10, 10))
+
+            multiplier_text = self.font.render(f"Multiplier: x{self.multiplier.combo_multiplier}", True, self.WHITE)
+            self.screen.blit(multiplier_text, (10, 60))
+
+            # Desenhar barra de saúde
+            self.health_bar.draw(self.screen)
+
+            pygame.display.flip()
+            pygame.time.delay(15)
+
+        pygame.quit()
