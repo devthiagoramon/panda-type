@@ -9,6 +9,7 @@ class Menu:
         self.YELLOW = (255, 255, 0)
         self.BLUE = (0, 0, 255)
         self.GREEN = (0, 255, 0)
+        self.RED = (255, 0, 0)
         self.font = pygame.font.Font(None, 36)
         self.menu_options = ["Iniciar Jogo", "Instruções", "Sair"]
         self.selected_option = 0
@@ -30,10 +31,10 @@ class Menu:
             ("Dedos e teclas:", self.WHITE),
             ("Mindinho Esquerdo (Q, A, Z)", self.PURPLE),
             ("Anelar Esquerdo (W, S, X)", self.YELLOW),
-            ("Médio Esquerdo (E, D, C)", self.BLUE),
+            ("Médio Esquerdo (E, D, C)", self.RED),
             ("Indicador Esquerdo (R, F, V, T, G, B)", self.GREEN),
             ("Indicador Direito (Y, H, N, U, J, M)", self.GREEN),
-            ("Médio Direito (I, K)", self.BLUE),
+            ("Médio Direito (I, K)", self.RED),
             ("Anelar Direito (O, L)", self.YELLOW),
             ("Mindinho Direito (P)", self.PURPLE),
         ]

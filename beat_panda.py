@@ -8,13 +8,17 @@ from multiplier import Multiplier
 
 
 class Game:
+
     def __init__(self):
         pygame.init()
 
         self.SCREEN_WIDTH = 600
         self.SCREEN_HEIGHT = 400
         self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
-        pygame.display.set_caption("Jogo de Ritmo - Digitação")
+        pygame.display.set_caption("Beat Panda")
+
+        self.wallpaper = pygame.image.load("assets/wallpaper.jpg")
+        self.wallpaper = pygame.transform.scale(self.wallpaper, (1000, 435))
 
         self.WHITE = (255, 255, 255)
         self.BLACK = (0, 0, 0)
@@ -72,8 +76,8 @@ class Game:
             'right_pinky': self.PURPLE,
             'left_ring': self.YELLOW,
             'right_ring': self.YELLOW,
-            'left_middle': self.BLUE,
-            'right_middle': self.BLUE,
+            'left_middle': self.RED,
+            'right_middle': self.RED,
             'left_index': self.GREEN,
             'right_index': self.GREEN
         }
@@ -105,7 +109,7 @@ class Game:
     def run(self):
         running = True
         while running:
-            self.screen.fill(self.BLACK)
+            self.screen.blit(self.wallpaper, (0, 0))
             current_time = time.time() - self.start_time
 
             # Condição de vitória
