@@ -6,7 +6,7 @@ def main():
     pygame.init()
     SCREEN_WIDTH, SCREEN_HEIGHT = 600, 400
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    pygame.display.set_caption("Jogo de Ritmo - Digitação")
+    pygame.display.set_caption("Beat Panda")
 
     menu = Menu(screen)
     clock = pygame.time.Clock()

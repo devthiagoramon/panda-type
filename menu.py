@@ -14,8 +14,22 @@ class Menu:
         self.menu_options = ["Iniciar Jogo", "Instruções", "Sair"]
         self.selected_option = 0
 
+        # Carregar a imagem do panda_win
+        self.panda_win = pygame.image.load("assets/panda_win.png")
+        self.panda_win = pygame.transform.scale(self.panda_win, (100, 100))  # Ajustar tamanho se necessário
+
     def draw(self):
         self.screen.fill(self.BLACK)
+
+        # Adicionar o título "Beat Panda"
+        title_font = pygame.font.Font(None, 70)  # Fonte maior para o título
+        title_text = title_font.render("Beat Panda", True, self.WHITE)
+        self.screen.blit(
+            title_text,
+            (self.screen.get_width() // 2 - title_text.get_width() // 2, 50)  # Posicionar no topo
+        )
+
+        # Renderizar as opções do menu
         for i, option in enumerate(self.menu_options):
             color = self.WHITE if i == self.selected_option else (100, 100, 100)
             text = self.font.render(option, True, color)
@@ -23,6 +37,10 @@ class Menu:
                 text,
                 (self.screen.get_width() // 2 - text.get_width() // 2, 150 + i * 50)
             )
+
+        # Adicionar a imagem do panda_win no canto inferior esquerdo
+        self.screen.blit(self.panda_win, (10, self.screen.get_height() - self.panda_win.get_height() - 10))
+
         pygame.display.flip()
 
     def show_instructions(self):

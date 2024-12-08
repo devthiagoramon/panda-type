@@ -82,6 +82,14 @@ class Game:
             'right_index': self.GREEN
         }
 
+        # Imagens de panda
+        self.panda_lost = pygame.image.load("assets/panda_lost.png")
+        self.panda_win = pygame.image.load("assets/panda_win.png")
+
+        # Redimensionar as imagens
+        self.panda_lost = pygame.transform.scale(self.panda_lost, (100, 100))
+        self.panda_win = pygame.transform.scale(self.panda_win, (100, 100))
+
     def create_letter(self):
         x_range = (50, self.SCREEN_WIDTH - 50)
         return Letter(x_range)
@@ -95,6 +103,10 @@ class Game:
                          (self.SCREEN_WIDTH // 2 - game_over_text.get_width() // 2, self.SCREEN_HEIGHT // 2 - 20))
         self.screen.blit(score_text,
                          (self.SCREEN_WIDTH // 2 - score_text.get_width() // 2, self.SCREEN_HEIGHT // 2 + 20))
+
+        # Desenhar imagem do panda de derrota
+        self.screen.blit(self.panda_lost, (10, self.SCREEN_HEIGHT - self.panda_lost.get_height() - 10))
+
         pygame.display.flip()
         pygame.time.delay(4000)
 
@@ -103,6 +115,10 @@ class Game:
         victory_text = self.font.render("Você ganhou!", True, self.GREEN)
         self.screen.blit(victory_text,
                          (self.SCREEN_WIDTH // 2 - victory_text.get_width() // 2, self.SCREEN_HEIGHT // 2))
+
+        # Desenhar imagem do panda de vitória
+        self.screen.blit(self.panda_win, (10, self.SCREEN_HEIGHT - self.panda_win.get_height() - 10))
+
         pygame.display.flip()
         pygame.time.delay(4000)
 
